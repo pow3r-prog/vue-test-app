@@ -2,18 +2,11 @@ import { createStore, createLogger } from 'vuex'
 
 import axios from 'axios'
 
-type TPackage = {
-  type: string
-  name: string
-  hits: number
-  bandwidth: number
-}
-
 const debug = process.env.NODE_ENV !== 'production'
 
 export default createStore({
   state: {
-    packages: [] as TPackage[],
+    packages: [],
   },
   getters: {
     getPackages: (state) => state.packages,
