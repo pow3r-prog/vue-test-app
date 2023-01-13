@@ -18,7 +18,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="packageItem in getPackages"
+          v-for="packageItem in packages"
           :key="packageItem.name"
           v-on:click="openPopupByName(packageItem.name)"
           data-bs-toggle="modal"
@@ -68,28 +68,32 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
+import debounce from 'lodash/debounce'
 
 const store = useStore()
 const input = ref('')
+
+type TData = {
+  type: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  name: string | any
+  hits: number
+  bandwidth: number
+}
 
 const data = ref({
   type: '',
   name: '',
   hits: 0,
   bandwidth: 0,
-})
+} as TData)
 
-type TData = {
-  type: string
-  name: string
-  hits: number
-  bandwidth: number
-}
+const packages = ref(data)
 
 const openPopupByName = (itemName: string) => {
-  store.getters.getPackages.find(({ name, type, hits, bandwidth }: TData) =>
+  store.state.packages.find(({ name, type, hits, bandwidth }: TData) =>
     name === itemName
       ? ((data.value.name = name),
         (data.value.type = type),
@@ -99,16 +103,30 @@ const openPopupByName = (itemName: string) => {
   )
 }
 
-const getPackages = computed(() => {
-  return store.getters.getPackages.filter(
+const getPackages = () => {
+  store.dispatch('fetchPackages').then(() => {
+    return (packages.value = store.state.packages)
+  })
+}
+
+const search = () => {
+  store.dispatch('fetchPackages')
+  return (packages.value = store.state.packages.filter(
     (item: { name: string | string[] }) => {
       return item.name.includes(input.value.toLowerCase())
     }
-  )
-})
+  ))
+}
+
+watch(
+  input,
+  debounce(() => {
+    search()
+  }, 500)
+)
 
 onMounted(() => {
-  store.dispatch('fetchPackages')
+  getPackages()
 })
 </script>
 
