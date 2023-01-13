@@ -47,10 +47,10 @@
             ></button>
           </div>
           <div class="modal-body">
-            <div>Type: {{ data.type }}</div>
-            <div>Name: {{ data.name }}</div>
-            <div>Hits: {{ data.hits }}</div>
-            <div>Bandwidth: {{ data.bandwidth }}</div>
+            <div>Type: {{ packages.type }}</div>
+            <div>Name: {{ packages.name }}</div>
+            <div>Hits: {{ packages.hits }}</div>
+            <div>Bandwidth: {{ packages.bandwidth }}</div>
           </div>
           <div class="modal-footer">
             <button
@@ -83,22 +83,22 @@ type TData = {
   bandwidth: number
 }
 
-const data = ref({
+const data = {
   type: '',
   name: '',
   hits: 0,
   bandwidth: 0,
-} as TData)
+}
 
-const packages = ref(data)
+const packages = ref(data as TData)
 
 const openPopupByName = (itemName: string) => {
   store.state.packages.find(({ name, type, hits, bandwidth }: TData) =>
     name === itemName
-      ? ((data.value.name = name),
-        (data.value.type = type),
-        (data.value.hits = hits),
-        (data.value.bandwidth = bandwidth))
+      ? ((packages.value.name = name),
+        (packages.value.type = type),
+        (packages.value.hits = hits),
+        (packages.value.bandwidth = bandwidth))
       : ''
   )
 }
