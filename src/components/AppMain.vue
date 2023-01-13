@@ -18,13 +18,13 @@
       </thead>
       <tbody>
         <tr
-          v-for="packageItem in packages"
-          :key="packageItem.name"
-          v-on:click="openPopupByName(packageItem.name)"
+          v-for="nameItem in packageName"
+          :key="nameItem.name"
+          v-on:click="openPopupByName(nameItem.name)"
           data-bs-toggle="modal"
           data-bs-target="#itemModal"
         >
-          <td>{{ packageItem.name }}</td>
+          <td>{{ nameItem.name }}</td>
         </tr>
       </tbody>
     </table>
@@ -47,10 +47,10 @@
             ></button>
           </div>
           <div class="modal-body">
-            <div>Type: {{ packages.type }}</div>
-            <div>Name: {{ packages.name }}</div>
-            <div>Hits: {{ packages.hits }}</div>
-            <div>Bandwidth: {{ packages.bandwidth }}</div>
+            <div>Type: {{ packagesInfo.type }}</div>
+            <div>Name: {{ packagesInfo.name }}</div>
+            <div>Hits: {{ packagesInfo.hits }}</div>
+            <div>Bandwidth: {{ packagesInfo.bandwidth }}</div>
           </div>
           <div class="modal-footer">
             <button
@@ -75,44 +75,43 @@ import debounce from 'lodash/debounce'
 const store = useStore()
 const input = ref('')
 
-type TData = {
+type TPackage = {
   type: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  name: string | any
+  name: string
   hits: number
   bandwidth: number
 }
 
-const data = {
+const packageName = ref([{ name: '' }])
+
+const packagesInfo = ref({
   type: '',
   name: '',
   hits: 0,
   bandwidth: 0,
-}
-
-const packages = ref(data as TData)
+} as TPackage)
 
 const openPopupByName = (itemName: string) => {
-  store.state.packages.find(({ name, type, hits, bandwidth }: TData) =>
+  store.state.packages.find(({ name, type, hits, bandwidth }: TPackage) =>
     name === itemName
-      ? ((packages.value.name = name),
-        (packages.value.type = type),
-        (packages.value.hits = hits),
-        (packages.value.bandwidth = bandwidth))
+      ? ((packagesInfo.value.type = type),
+        (packagesInfo.value.name = name),
+        (packagesInfo.value.hits = hits),
+        (packagesInfo.value.bandwidth = bandwidth))
       : ''
   )
 }
 
 const getPackages = () => {
   store.dispatch('fetchPackages').then(() => {
-    return (packages.value = store.state.packages)
+    return (packageName.value = store.state.packages)
   })
 }
 
 const search = () => {
   store.dispatch('fetchPackages')
-  return (packages.value = store.state.packages.filter(
-    (item: { name: string | string[] }) => {
+  return (packageName.value = store.state.packages.filter(
+    (item: { name: string }) => {
       return item.name.includes(input.value.toLowerCase())
     }
   ))

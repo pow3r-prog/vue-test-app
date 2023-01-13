@@ -2,11 +2,18 @@ import { createStore, createLogger } from 'vuex'
 
 import axios from 'axios'
 
+type TPackage = {
+  type: string
+  name: string
+  hits: number
+  bandwidth: number
+}
+
 const debug = process.env.NODE_ENV !== 'production'
 
 export default createStore({
   state: {
-    packages: [],
+    packages: [] as TPackage[],
   },
   getters: {
     getPackages: (state) => state.packages,
@@ -19,7 +26,6 @@ export default createStore({
         )
         commit('SET_PACKAGES', data.data)
       } catch (error) {
-        alert(error)
         console.log(error)
       }
     },
