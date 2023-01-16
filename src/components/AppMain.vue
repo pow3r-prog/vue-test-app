@@ -92,13 +92,8 @@ const packagesInfo = ref({
 } as TPackage)
 
 const openPopupByName = (itemName: string) => {
-  store.state.packages.find(({ name, type, hits, bandwidth }: TPackage) =>
-    name === itemName
-      ? ((packagesInfo.value.type = type),
-        (packagesInfo.value.name = name),
-        (packagesInfo.value.hits = hits),
-        (packagesInfo.value.bandwidth = bandwidth))
-      : ''
+  store.state.packages.find((item: TPackage) =>
+    item.name === itemName ? (packagesInfo.value = item) : ''
   )
 }
 
