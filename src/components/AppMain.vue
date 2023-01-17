@@ -1,69 +1,13 @@
 <template>
   <div class="container">
-    <div class="input-group mb-3 input">
-      <input
-        type="text"
-        class="form-control"
-        aria-label="Sizing example input"
-        aria-describedby="inputGroup-sizing-default"
-        placeholder="Name"
-        v-model="input"
-      />
-    </div>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="nameItem in packageName"
-          :key="nameItem.name"
-          v-on:click="openPopupByName(nameItem.name)"
-          data-bs-toggle="modal"
-          data-bs-target="#itemModal"
-        >
-          <td>{{ nameItem.name }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <div
-      class="modal fade"
-      id="itemModal"
-      tabindex="-1"
-      aria-labelledby="itemModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="itemModalLabel">Package info</h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div>Type: {{ packagesInfo.type }}</div>
-            <div>Name: {{ packagesInfo.name }}</div>
-            <div>Hits: {{ packagesInfo.hits }}</div>
-            <div>Bandwidth: {{ packagesInfo.bandwidth }}</div>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <PackageSearch v-model="input" />
+    <PackagesTable :data="packageName" :openPopupByName="openPopupByName" />
+    <ItemPopup
+      :type="packagesInfo.type"
+      :name="packagesInfo.name"
+      :hits="packagesInfo.hits"
+      :bandwidth="packagesInfo.bandwidth"
+    />
   </div>
 </template>
 
@@ -71,6 +15,9 @@
 import { ref, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import debounce from 'lodash/debounce'
+import ItemPopup from '@/containers/popup/ItemPopup.vue'
+import PackageSearch from '@/containers/search/PackageSearch.vue'
+import PackagesTable from '@/containers/table/PackagesTable.vue'
 
 const store = useStore()
 const input = ref('')
@@ -131,27 +78,5 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  .input {
-    width: 50%;
-    margin-top: 50px;
-
-    @media (max-width: $size-small) {
-      width: 100%;
-    }
-  }
-
-  .table {
-    th,
-    td {
-      color: $color-aqua;
-    }
-
-    td {
-      cursor: pointer;
-      &:hover {
-        background: $color-grey;
-      }
-    }
-  }
 }
 </style>
